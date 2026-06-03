@@ -137,7 +137,7 @@
                       <td><strong>{{ fmt(p.amazon_clicks) }}</strong></td>
                       <td>
                         <span class="tda-ctr-badge" [class.tda-ctr-badge--good]="p.ctr_percent > 3">
-                          {{ p.ctr_percent?.toFixed(1) }}%
+                          {{ p.ctr_percent!.toFixed(1) }}%
                         </span>
                       </td>
                       <td class="tda-earnings">

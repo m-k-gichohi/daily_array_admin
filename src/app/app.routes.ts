@@ -3,6 +3,12 @@ import { authGuard, publicGuard } from './backstage/guards/auth.guard';
 
 export const routes: Routes = [
 
+  // Home landing
+  {
+    path: '',
+    loadComponent: () => import('./home/landing.component').then(m => m.LandingComponent),
+    title: 'Home'
+  },
 
   // ── BACKSTAGE: LOGIN ──
   {
