@@ -1,0 +1,36 @@
+    .tda-bs-page { max-width: 1200px; }
+    .tda-bs-eyebrow { font-size:0.6875rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#b5832a; }
+    .tda-bs-title { font-family:'Cormorant Garamond',serif; font-size:clamp(1.5rem,3vw,2.25rem); font-weight:400; color:#1a1a1a; }
+    .tda-bs-subtitle { font-size:0.8125rem; color:#888; margin-top:4px; }
+
+    /* Analytics cards */
+    .tda-analytics-card { background:#fff; border:1px solid #f0ead8; border-radius:4px; padding:1.25rem; }
+    .tda-analytics-card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:1.25rem; }
+    .tda-card-label { font-size:0.6875rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#888; }
+    .tda-card-total { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:500; color:#1a1a1a; line-height:1; margin-top:4px; }
+    .tda-card-icon { width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .tda-chart-wrap { position:relative; height:200px; }
+    .tda-chart-wrap--sm { height:180px; }
+
+    /* Traffic sources */
+    .tda-source-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .tda-source-name { font-size:0.875rem; color:#333; }
+    .tda-source-count { font-size:0.875rem; font-weight:500; color:#1a1a1a; }
+    .tda-progress-bar { height:4px; background:#f0ead8; border-radius:2px; overflow:hidden; }
+    .tda-progress-fill { height:100%; border-radius:2px; transition:width 0.8s cubic-bezier(.25,.46,.45,.94); }
+
+    /* Table */
+    .tda-table { font-size:0.875rem; }
+    .tda-table thead th { font-size:0.6875rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#888; border-bottom:1px solid #f0ead8; background:#fdf8ef; padding:0.75rem 1rem; white-space:nowrap; }
+    .tda-table tbody td { padding:0.875rem 1rem; border-bottom:1px solid #f8f5ef; vertical-align:middle; color:#333; }
+    .tda-rank { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:4px; background:#f0ead8; font-size:0.75rem; font-weight:600; color:#888; }
+    .tda-rank--gold { background:#b5832a; color:#fff; }
+    .tda-product-name { font-weight:500; color:#1a1a1a; max-width:240px; }
+    .tda-ctr-badge { font-size:0.75rem; font-weight:500; padding:2px 8px; border-radius:3px; background:#f0ead8; color:#888; }
+    .tda-ctr-badge--good { background:#e1f5ee; color:#085041; }
+    .tda-earnings { font-weight:600; color:#085041; }
+
+    /* Skeleton */
+    .tda-skeleton { background:linear-gradient(90deg,#f0ead8 25%,#f8f5ef 50%,#f0ead8 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:4px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  

@@ -1,0 +1,131 @@
+  <div class="tda-bs-page">
+
+      <!-- Page header -->
+      <div class="tda-bs-header mb-4">
+        <p class="tda-bs-eyebrow mb-1">Overview</p>
+        <h1 class="tda-bs-title mb-0">Good {{ greeting() }}, welcome back.</h1>
+      </div>
+
+      <!-- ── STAT CARDS ── -->
+      @if (loading()) {
+        <div class="row g-3 mb-4">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="col-sm-6 col-xl-3">
+              <div class="tda-skeleton" style="height:110px"></div>
+            </div>
+          }
+        </div>
+      } @else if (stats()) {
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6 col-xl-3">
+            <div class="tda-stat-card">
+              <div class="tda-stat-icon" style="background:#eeedfe;color:#3c3489">
+                <i class="bi bi-eye-fill"></i>
+              </div>
+              <div class="tda-stat-num">{{ fmt(stats()!.total_views) }}</div>
+              <div class="tda-stat-label">Total page views</div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-xl-3">
+            <div class="tda-stat-card">
+              <div class="tda-stat-icon" style="background:#e1f5ee;color:#085041">
+                <i class="bi bi-bag-check-fill"></i>
+              </div>
+              <div class="tda-stat-num">{{ fmt(stats()!.total_clicks) }}</div>
+              <div class="tda-stat-label">Amazon clicks</div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-xl-3">
+            <div class="tda-stat-card">
+              <div class="tda-stat-icon" style="background:#fff3dc;color:#b5832a">
+                <i class="bi bi-box-seam-fill"></i>
+              </div>
+              <div class="tda-stat-num">{{ stats()!.total_products }}</div>
+              <div class="tda-stat-label">Active products</div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-xl-3">
+            <div class="tda-stat-card">
+              <div class="tda-stat-icon" style="background:#faece7;color:#712b13">
+                <i class="bi bi-graph-up-arrow"></i>
+              </div>
+              <div class="tda-stat-num">{{ stats()!.overall_ctr!.toFixed(1) }}%</div>
+              <div class="tda-stat-label">Overall CTR</div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ── QUICK ACTIONS ── -->
+      <div class="row g-3 mb-4">
+        <div class="col-12">
+          <div class="tda-bs-card p-3">
+            <p class="tda-bs-card-label mb-3">Quick actions</p>
+            <div class="d-flex flex-wrap gap-2">
+              <a routerLink="/backstage/products/new" class="btn tda-btn-action">
+                <i class="bi bi-plus-lg me-2"></i>Add product
+              </a>
+              <a routerLink="/backstage/categories" class="btn tda-btn-action-outline">
+                <i class="bi bi-collection me-2"></i>Manage categories
+              </a>
+              <a routerLink="/backstage/analytics" class="btn tda-btn-action-outline">
+                <i class="bi bi-bar-chart me-2"></i>View analytics
+              </a>
+              <a routerLink="/" target="_blank" class="btn tda-btn-action-outline">
+                <i class="bi bi-box-arrow-up-right me-2"></i>View live site
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TOP PRODUCTS TABLE ── -->
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="tda-bs-card">
+            <div class="d-flex align-items-center justify-content-between p-3 border-bottom" style="border-color:#f0ead8!important">
+              <p class="tda-bs-card-label mb-0">Top products this month</p>
+              <a routerLink="/backstage/analytics" class="tda-link-gold">Full analytics →</a>
+            </div>
+
+            @if (topProducts().length === 0 && !loading()) {
+              <div class="p-4 text-center">
+                <p class="text-muted mb-0" style="font-size:0.875rem">No analytics data yet. Traffic will appear here as visitors arrive.</p>
+              </div>
+            } @else {
+              <div class="table-responsive">
+                <table class="table tda-table mb-0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Product</th>
+                      <th>Views</th>
+                      <th>Clicks</th>
+                      <th>CTR</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (p of topProducts(); track p.slug; let i = $index) {
+                      <tr>
+                        <td>
+                          <span class="tda-rank" [class.tda-rank--gold]="i === 0">{{ i + 1 }}</span>
+                        </td>
+                        <td class="tda-product-name">{{ p.name }}</td>
+                        <td>{{ fmt(p.page_views) }}</td>
+                        <td><strong>{{ fmt(p.amazon_clicks) }}</strong></td>
+                        <td>
+                          <span class="tda-ctr-badge" [class.tda-ctr-badge--good]="p.ctr_percent > 3">
+                            <!-- {{ p.ctr_percent!.toFixed(1) }}% -->
+                          </span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+    </div>

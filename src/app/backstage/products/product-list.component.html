@@ -1,0 +1,146 @@
+  <div class="tda-bs-page">
+
+      <!-- Header -->
+      <div class="d-flex align-items-start justify-content-between mb-4 flex-wrap gap-3">
+        <div>
+          <p class="tda-bs-eyebrow mb-1">Manage</p>
+          <h1 class="tda-bs-title mb-0">Products</h1>
+        </div>
+        <a routerLink="/backstage/products/new" class="btn tda-btn-primary d-flex align-items-center gap-2">
+          <i class="bi bi-plus-lg"></i> Add product
+        </a>
+      </div>
+
+      <!-- Search + filter bar -->
+      <div class="tda-bs-card p-3 mb-4">
+        <div class="row g-3 align-items-center">
+          <div class="col-md-5">
+            <div class="tda-search-wrap">
+              <i class="bi bi-search tda-search-icon"></i>
+              <input
+                type="text"
+                class="form-control tda-input tda-search-input"
+                placeholder="Search products..."
+                [(ngModel)]="searchQuery"
+              />
+            </div>
+          </div>
+          <div class="col-md-3">
+            <select class="form-select tda-input" [(ngModel)]="filterStatus">
+              <option value="all">All products</option>
+              <option value="active">Active only</option>
+              <option value="hidden">Hidden only</option>
+              <option value="featured">Featured only</option>
+            </select>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <span class="tda-count-label">{{ filtered().length }} product{{ filtered().length === 1 ? '' : 's' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product grid -->
+      @if (loading()) {
+        <div class="row g-3">
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="col-md-6 col-xl-4">
+              <div class="tda-skeleton" style="height:200px"></div>
+            </div>
+          }
+        </div>
+      } @else if (filtered().length === 0) {
+        <div class="tda-bs-card p-5 text-center">
+          <i class="bi bi-box-seam fs-1 text-muted mb-3 d-block"></i>
+          <p class="text-muted mb-3">No products found.</p>
+          <a routerLink="/backstage/products/new" class="btn tda-btn-primary">Add your first product</a>
+        </div>
+      } @else {
+        <div class="row g-3">
+          @for (product of filtered(); track product.id) {
+            <div class="col-md-6 col-xl-4">
+              <div class="tda-product-card h-100">
+
+                <!-- Image -->
+                <div class="tda-product-img-wrap">
+                  <img
+                    [src]="product.image_url || 'assets/placeholder.jpg'"
+                    [alt]="product.name"
+                    class="tda-product-img"
+                    (error)="onImgError($event)"
+                  />
+                  <div class="tda-product-badges">
+                    @if (product.is_featured) {
+                      <span class="tda-badge tda-badge--gold">
+                        <i class="bi bi-star-fill me-1"></i>Featured
+                      </span>
+                    }
+                    @if (!product.is_active) {
+                      <span class="tda-badge tda-badge--red">Hidden</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Body -->
+                <div class="tda-product-body">
+                  <p class="tda-product-category mb-1">{{ product.category?.name ?? '—' }}</p>
+                  <h3 class="tda-product-name mb-1">{{ product.name }}</h3>
+
+                  <!-- Toggle actions -->
+                  <div class="d-flex align-items-center gap-3 mb-3">
+                    <button
+                      class="tda-toggle-btn"
+                      [class.tda-toggle-btn--active]="product.is_featured"
+                      (click)="toggleFeatured(product)">
+                      <i class="bi me-1" [class.bi-star-fill]="product.is_featured" [class.bi-star]="!product.is_featured"></i>
+                      {{ product.is_featured ? 'Featured' : 'Feature' }}
+                    </button>
+                    <button
+                      class="tda-toggle-btn"
+                      [class.tda-toggle-btn--active]="product.is_active"
+                      (click)="toggleActive(product)">
+                      <i class="bi me-1" [class.bi-eye-fill]="product.is_active" [class.bi-eye-slash]="!product.is_active"></i>
+                      {{ product.is_active ? 'Visible' : 'Hidden' }}
+                    </button>
+                  </div>
+
+                  <!-- Edit / Delete -->
+                  <div class="d-flex gap-2">
+                    <a
+                      [routerLink]="['/backstage/products/edit', product.id]"
+                      class="btn tda-btn-edit flex-grow-1">
+                      <i class="bi bi-pencil me-1"></i>Edit
+                    </a>
+                    <button
+                      class="btn tda-btn-delete"
+                      (click)="confirmDelete(product)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+
+    <!-- Delete confirm modal -->
+    @if (deleteTarget()) {
+      <div class="tda-modal-backdrop" (click)="deleteTarget.set(null)">
+        <div class="tda-modal" (click)="$event.stopPropagation()">
+          <h3 class="tda-modal-title mb-2">Delete product?</h3>
+          <p class="tda-modal-body mb-4">
+            "<strong>{{ deleteTarget()!.name }}</strong>" will be permanently deleted.
+            This cannot be undone.
+          </p>
+          <div class="d-flex gap-2 justify-content-end">
+            <button class="btn tda-btn-cancel" (click)="deleteTarget.set(null)">Cancel</button>
+            <button class="btn tda-btn-confirm-delete" (click)="deleteProduct()">
+              <i class="bi bi-trash me-1"></i>Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    }

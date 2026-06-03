@@ -1,0 +1,238 @@
+<div class="tda-bs-page">
+  <!-- Header -->
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <a routerLink="/backstage/products" class="tda-back-btn">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+    <div>
+      <p class="tda-bs-eyebrow mb-0">
+        {{ isEditing() ? "Edit" : "New" }} product
+      </p>
+      <h1 class="tda-bs-title mb-0">
+        {{ isEditing() ? productName() : "Add product" }}
+      </h1>
+    </div>
+  </div>
+
+  @if (pageLoading()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="tda-spinner"></div>
+    </div>
+  } @else {
+    <div class="row g-4">
+      <!-- ── LEFT COLUMN ── -->
+
+      <div class="col-lg-4">
+        <!-- Image upload -->
+        <div class="tda-form-section mb-4">
+          <p class="tda-form-section-title">Product image</p>
+
+          <!-- Drop zone -->
+          <div
+            class="tda-drop-zone"
+            [class.tda-drop-zone--has-image]="form.image_url"
+            [class.tda-drop-zone--dragging]="isDragging()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="isDragging.set(false)"
+            (drop)="onDrop($event)"
+            (click)="fileInput.click()"
+          >
+            @if (uploadingImage()) {
+              <div class="tda-upload-progress">
+                <div class="tda-spinner mb-2"></div>
+                <p class="mb-0" style="font-size: 0.8125rem; color: #888">
+                  Uploading to Cloudinary...
+                </p>
+              </div>
+            } @else if (form.image_url) {
+              <img
+                [src]="form.image_url"
+                alt="Product"
+                class="tda-drop-preview"
+              />
+              <div class="tda-drop-overlay">
+                <i class="bi bi-arrow-repeat fs-4"></i>
+                <p class="mb-0 mt-1" style="font-size: 0.8125rem">
+                  Click or drag to replace
+                </p>
+              </div>
+            } @else {
+              <div class="tda-drop-empty">
+                <i class="bi bi-cloud-arrow-up fs-2 mb-2 text-muted"></i>
+                <p class="mb-1" style="font-size: 0.875rem; color: #555">
+                  Drag & drop image here
+                </p>
+                <p class="mb-0" style="font-size: 0.75rem; color: #aaa">
+                  or click to browse
+                </p>
+              </div>
+            }
+          </div>
+
+          <input
+            #fileInput
+            type="file"
+            accept="image/*"
+            class="d-none"
+            (change)="onFileSelected($event)"
+          />
+
+          @if (uploadError()) {
+            <div class="tda-field-error mt-2">{{ uploadError() }}</div>
+          }
+          @if (form.image_url) {
+            <div class="tda-image-url-row">
+              <div class="tda-image-url-preview">
+                <label class="tda-field-label">Image URL</label>
+                <a href="{{ form.image_url }}" target="_blank" class="tda-image-url-link">
+                  {{ form.image_url }}
+                </a>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-secondary tda-image-url-copy" (click)="copyImageUrl(form.image_url!)">
+                Copy
+              </button>
+            </div>
+          }
+        </div>
+        <!-- Basic info -->
+        <div class="tda-form-section mb-4">
+          <p class="tda-form-section-title">Basic information</p>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="tda-field-label">Product name *</label>
+              <input
+                type="text"
+                class="form-control tda-input"
+                [(ngModel)]="form.name"
+                (input)="autoSlug()"
+                placeholder="e.g. Coop Home Goods Original Adjustable Pillow"
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="tda-field-label">URL slug *</label>
+              <input
+                type="text"
+                class="form-control tda-input"
+                [(ngModel)]="form.slug"
+                placeholder="e.g. coop-home-goods-pillow"
+              />
+              <small class="text-muted" style="font-size: 0.75rem">
+                URL: /products/{{ form.slug || "your-slug" }}
+              </small>
+            </div>
+            <div class="col-md-6">
+              <label class="tda-field-label">Category *</label>
+              <select
+                class="form-select tda-input"
+                [(ngModel)]="form.category_id"
+              >
+                <option value="">Select category</option>
+                @for (cat of categories(); track cat.id) {
+                  <option [value]="cat.id">{{ cat.name }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="tda-field-label">Tagline</label>
+              <input
+                type="text"
+                class="form-control tda-input"
+                [(ngModel)]="form.tagline"
+                placeholder="e.g. Stays cool all night, every night."
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Visibility -->
+        <div class="tda-form-section mb-4">
+          <p class="tda-form-section-title">Visibility</p>
+          <div class="tda-switch-row mb-3">
+            <div>
+              <p class="tda-switch-label mb-0">Active / Visible</p>
+              <p class="tda-switch-hint mb-0">
+                Show this product on the website
+              </p>
+            </div>
+            <div class="form-check form-switch mb-0">
+              <input
+                class="form-check-input tda-switch"
+                type="checkbox"
+                [(ngModel)]="form.is_active"
+              />
+            </div>
+          </div>
+          <div class="tda-switch-row">
+            <div>
+              <p class="tda-switch-label mb-0">Featured on homepage</p>
+              <p class="tda-switch-hint mb-0">Show in "This week's picks"</p>
+            </div>
+            <div class="form-check form-switch mb-0">
+              <input
+                class="form-check-input tda-switch"
+                type="checkbox"
+                [(ngModel)]="form.is_featured"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RIGHT COLUMN ── -->
+
+      <div class="col-lg-8">
+        <div class="tda-form-section mb-4">
+          <p class="tda-form-section-title">Description (rich text)</p>
+          <p class="tda-form-hint mb-2">
+            Write the full story-driven description here. Use the toolbar to add
+            headings, bold text, blockquotes and more.
+          </p>
+          <div class="tda-quill-wrap">
+            <angular-editor
+              [(ngModel)]="form.description"
+              (ngModelChange)="onDescriptionChange($event)"
+              [config]="config"
+            ></angular-editor>
+          </div>
+        </div>
+
+         <!-- Amazon details -->
+            <div class="tda-form-section mb-4">
+              <p class="tda-form-section-title">Amazon details</p>
+              <div class="row g-3">
+              
+                <div class="col-12">
+                  <label class="tda-field-label">Full Amazon URL *</label>
+                  <input type="url" class="form-control tda-input"
+                    [(ngModel)]="form.amazon_url"
+                    placeholder="https://amazon.com/dp/...?tag=thedailyarray-20" />
+                </div>
+              </div>
+            </div>
+
+        <!-- Save button -->
+        <div class="tda-form-section">
+          @if (saveError()) {
+            <div class="tda-field-error mb-3">{{ saveError() }}</div>
+          }
+          <button
+            class="btn tda-btn-save w-100 mb-2"
+            [disabled]="saving()"
+            (click)="save()"
+          >
+            @if (saving()) {
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              Saving...
+            } @else {
+              <i class="bi bi-check-lg me-2"></i>
+              {{ isEditing() ? "Update product" : "Add product" }}
+            }
+          </button>
+          <a routerLink="/backstage/products" class="btn tda-btn-cancel w-100"
+            >Cancel</a
+          >
+        </div>
+      </div>
+    </div>
+  }
+</div>

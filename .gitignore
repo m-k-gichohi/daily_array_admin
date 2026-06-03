@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.npm
+
+# Build output
+dist/
+out-tsc/
+
+# Environment — NEVER commit these
+.env
+.env.local
+.env.production
+
+# Angular cache
+.angular/
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+src/environments/environment.development.ts

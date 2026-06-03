@@ -1,0 +1,160 @@
+   <div class="tda-bs-page">
+
+      <!-- Header -->
+      <div class="mb-4">
+        <p class="tda-bs-eyebrow mb-1">Performance</p>
+        <h1 class="tda-bs-title mb-0">Analytics</h1>
+        <p class="tda-bs-subtitle mb-0">Last 30 days · Updates in real time</p>
+      </div>
+
+      @if (loading()) {
+        <div class="row g-3 mb-4">
+          @for (i of [1,2]; track i) {
+            <div class="col-lg-6">
+              <div class="tda-skeleton" style="height:280px"></div>
+            </div>
+          }
+        </div>
+      } @else {
+
+        <!-- ── CHARTS ROW ── -->
+        <div class="row g-4 mb-4">
+
+          <!-- Clicks chart -->
+          <div class="col-lg-6">
+            <div class="tda-analytics-card">
+              <div class="tda-analytics-card-header">
+                <div>
+                  <p class="tda-card-label mb-0">Amazon clicks</p>
+                  <p class="tda-card-total mb-0">{{ totalClicks() }}</p>
+                </div>
+                <div class="tda-card-icon" style="background:#e1f5ee;color:#085041">
+                  <i class="bi bi-bag-check-fill"></i>
+                </div>
+              </div>
+              <div class="tda-chart-wrap">
+                <canvas #clicksChart></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Views chart -->
+          <div class="col-lg-6">
+            <div class="tda-analytics-card">
+              <div class="tda-analytics-card-header">
+                <div>
+                  <p class="tda-card-label mb-0">Product page views</p>
+                  <p class="tda-card-total mb-0">{{ totalViews() }}</p>
+                </div>
+                <div class="tda-card-icon" style="background:#eeedfe;color:#3c3489">
+                  <i class="bi bi-eye-fill"></i>
+                </div>
+              </div>
+              <div class="tda-chart-wrap">
+                <canvas #viewsChart></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── TRAFFIC SOURCES + PIE ── -->
+        <div class="row g-4 mb-4">
+
+          <div class="col-lg-5">
+            <div class="tda-analytics-card h-100">
+              <div class="tda-analytics-card-header mb-3">
+                <p class="tda-card-label mb-0">Traffic sources</p>
+              </div>
+              <div class="tda-chart-wrap tda-chart-wrap--sm">
+                <canvas #sourcesChart></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-7">
+            <div class="tda-analytics-card h-100">
+              <p class="tda-card-label mb-3">Source breakdown</p>
+              @if (sources().length === 0) {
+                <p class="text-muted" style="font-size:0.875rem">No traffic data yet.</p>
+              } @else {
+                @for (src of sources(); track src.source; let i = $index) {
+                  <div class="tda-source-row mb-3">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="tda-source-dot" [style.background]="sourceColors[i % sourceColors.length]"></span>
+                        <span class="tda-source-name">{{ src.source }}</span>
+                      </div>
+                      <span class="tda-source-count">{{ src.visits }}</span>
+                    </div>
+                    <div class="tda-progress-bar">
+                      <div class="tda-progress-fill"
+                        [style.width]="sourcePercent(src.visits) + '%'"
+                        [style.background]="sourceColors[i % sourceColors.length]">
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── PRODUCT PERFORMANCE TABLE ── -->
+        <div class="tda-analytics-card">
+          <div class="tda-analytics-card-header mb-0 pb-3" style="border-bottom:1px solid #f0ead8">
+            <p class="tda-card-label mb-0">All products — this month</p>
+          </div>
+
+          @if (products().length === 0) {
+            <div class="p-4 text-center">
+              <p class="text-muted mb-0" style="font-size:0.875rem">No product data yet. Analytics appear as visitors arrive.</p>
+            </div>
+          } @else {
+            <div class="table-responsive">
+              <table class="table tda-table mb-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Page views</th>
+                    <th>Amazon clicks</th>
+                    <th>CTR</th>
+                    <th>Est. earnings</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (p of products(); track p.slug; let i = $index) {
+                    <tr>
+                      <td>
+                        <span class="tda-rank" [class.tda-rank--gold]="i === 0">{{ i + 1 }}</span>
+                      </td>
+                      <td class="tda-product-name">{{ p.name }}</td>
+                      <td style="color:#b5832a;font-weight:500">${{ p.price_approx }}</td>
+                      <td>{{ fmt(p.page_views) }}</td>
+                      <td><strong>{{ fmt(p.amazon_clicks) }}</strong></td>
+                      <td>
+                        <span class="tda-ctr-badge" [class.tda-ctr-badge--good]="p.ctr_percent > 3">
+                          {{ p.ctr_percent?.toFixed(1) }}%
+                        </span>
+                      </td>
+                      <td class="tda-earnings">
+                        {{ estEarnings(p) }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <div class="px-3 py-2" style="border-top:1px solid #f8f5ef">
+              <small class="text-muted" style="font-size:0.75rem">
+                Estimated earnings based on 4% Amazon commission rate at a 5% conversion rate. Actual earnings vary.
+              </small>
+            </div>
+          }
+        </div>
+
+      }
+    </div>

@@ -1,0 +1,52 @@
+ .tda-bs-page { max-width: 1200px; }
+    .tda-bs-eyebrow { font-size:0.6875rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#b5832a; }
+    .tda-bs-title { font-family:'Cormorant Garamond',serif; font-size:clamp(1.5rem,3vw,2.25rem); font-weight:400; color:#1a1a1a; }
+    .tda-bs-card { background:#fff; border:1px solid #f0ead8; border-radius:4px; }
+    .tda-btn-primary { background:#1a1a2e; color:#fff; border:none; border-radius:2px; font-size:0.8125rem; font-weight:500; padding:0.5rem 1.25rem; transition:background 0.2s; }
+    .tda-btn-primary:hover { background:#b5832a; color:#fff; }
+
+    /* Search */
+    .tda-search-wrap { position:relative; }
+    .tda-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#bbb; font-size:0.875rem; }
+    .tda-search-input { padding-left:2.25rem !important; }
+    .tda-input { border:1px solid #f0ead8; border-radius:2px; font-size:0.875rem; color:#1a1a1a; background:#fdf8ef; }
+    .tda-input:focus { border-color:#b5832a; box-shadow:0 0 0 3px rgba(181,131,42,0.1); background:#fff; }
+    .tda-count-label { font-size:0.8125rem; color:#888; }
+
+    /* Product card */
+    .tda-product-card { background:#fff; border:1px solid #f0ead8; border-radius:4px; overflow:hidden; display:flex; flex-direction:column; }
+    .tda-product-img-wrap { position:relative; aspect-ratio:16/9; overflow:hidden; background:#f8f5ef; }
+    .tda-product-img { width:100%; height:100%; object-fit:cover; transition:transform 0.3s; }
+    .tda-product-card:hover .tda-product-img { transform:scale(1.03); }
+    .tda-product-badges { position:absolute; top:10px; left:10px; display:flex; gap:6px; flex-wrap:wrap; }
+    .tda-badge { font-size:0.625rem; font-weight:600; letter-spacing:0.06em; padding:3px 8px; border-radius:2px; }
+    .tda-badge--gold { background:#b5832a; color:#fff; }
+    .tda-badge--red { background:#dc3545; color:#fff; }
+    .tda-product-body { padding:1rem; flex:1; display:flex; flex-direction:column; }
+    .tda-product-category { font-size:0.6875rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#b5832a; }
+    .tda-product-name { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:500; color:#1a1a1a; line-height:1.3; }
+    .tda-product-price { font-family:'Cormorant Garamond',serif; font-size:1.25rem; font-weight:500; color:#b5832a; }
+
+    /* Toggle buttons */
+    .tda-toggle-btn { background:none; border:1px solid #f0ead8; border-radius:2px; font-size:0.75rem; color:#888; padding:4px 10px; cursor:pointer; transition:all 0.15s; }
+    .tda-toggle-btn:hover { border-color:#b5832a; color:#b5832a; }
+    .tda-toggle-btn--active { border-color:#b5832a; color:#b5832a; background:#fdf8ef; }
+
+    /* Edit/Delete */
+    .tda-btn-edit { border:1px solid #f0ead8; background:#fff; color:#1a1a1a; border-radius:2px; font-size:0.8125rem; font-weight:400; padding:0.4rem 0.875rem; transition:all 0.15s; }
+    .tda-btn-edit:hover { border-color:#1a1a2e; background:#1a1a2e; color:#fff; }
+    .tda-btn-delete { border:1px solid #ffd7d7; background:#fff5f5; color:#dc3545; border-radius:2px; padding:0.4rem 0.75rem; font-size:0.875rem; transition:all 0.15s; }
+    .tda-btn-delete:hover { background:#dc3545; color:#fff; }
+
+    /* Modal */
+    .tda-modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:200; display:flex; align-items:center; justify-content:center; padding:1rem; }
+    .tda-modal { background:#fff; border-radius:4px; padding:2rem; max-width:420px; width:100%; }
+    .tda-modal-title { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:500; color:#1a1a1a; }
+    .tda-modal-body { font-size:0.9rem; color:#555; line-height:1.6; }
+    .tda-btn-cancel { border:1px solid #f0ead8; background:#fff; color:#888; border-radius:2px; font-size:0.8125rem; padding:0.5rem 1rem; }
+    .tda-btn-confirm-delete { background:#dc3545; color:#fff; border:none; border-radius:2px; font-size:0.8125rem; font-weight:500; padding:0.5rem 1rem; }
+
+    /* Skeleton */
+    .tda-skeleton { background:linear-gradient(90deg,#f0ead8 25%,#f8f5ef 50%,#f0ead8 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:4px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  

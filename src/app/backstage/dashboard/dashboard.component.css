@@ -1,0 +1,26 @@
+  .tda-bs-page { max-width: 1200px; }
+    .tda-bs-eyebrow { font-size:0.6875rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#b5832a; }
+    .tda-bs-title { font-family:'Cormorant Garamond',serif; font-size:clamp(1.5rem,3vw,2.25rem); font-weight:400; color:#1a1a1a; }
+    .tda-stat-card { background:#fff; border:1px solid #f0ead8; border-radius:4px; padding:1.25rem; }
+    .tda-stat-icon { width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; margin-bottom:0.875rem; }
+    .tda-stat-num { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:500; color:#1a1a1a; line-height:1; margin-bottom:4px; }
+    .tda-stat-label { font-size:0.75rem; color:#888; }
+    .tda-bs-card { background:#fff; border:1px solid #f0ead8; border-radius:4px; }
+    .tda-bs-card-label { font-size:0.6875rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#888; }
+    .tda-btn-action { background:#1a1a2e; color:#fff; border:none; border-radius:2px; font-size:0.8125rem; font-weight:500; padding:0.5rem 1rem; transition:background 0.2s; }
+    .tda-btn-action:hover { background:#b5832a; color:#fff; }
+    .tda-btn-action-outline { border:1px solid #f0ead8; background:#fff; color:#1a1a1a; border-radius:2px; font-size:0.8125rem; font-weight:400; padding:0.5rem 1rem; transition:all 0.2s; }
+    .tda-btn-action-outline:hover { border-color:#b5832a; color:#b5832a; }
+    .tda-table { font-size:0.875rem; }
+    .tda-table thead th { font-size:0.6875rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#888; border-bottom:1px solid #f0ead8; background:#fdf8ef; padding:0.75rem 1rem; }
+    .tda-table tbody td { padding:0.875rem 1rem; border-bottom:1px solid #f8f5ef; vertical-align:middle; color:#333; }
+    .tda-rank { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:4px; background:#f0ead8; font-size:0.75rem; font-weight:600; color:#888; }
+    .tda-rank--gold { background:#b5832a; color:#fff; }
+    .tda-product-name { font-weight:500; color:#1a1a1a; max-width:280px; }
+    .tda-ctr-badge { font-size:0.75rem; font-weight:500; padding:2px 8px; border-radius:3px; background:#f0ead8; color:#888; }
+    .tda-ctr-badge--good { background:#e1f5ee; color:#085041; }
+    .tda-link-gold { font-size:0.8125rem; font-weight:500; color:#b5832a; text-decoration:none; }
+    .tda-link-gold:hover { text-decoration:underline; }
+    .tda-skeleton { background:linear-gradient(90deg,#f0ead8 25%,#f8f5ef 50%,#f0ead8 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:4px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  
