@@ -9,9 +9,9 @@ const cloudinaryUploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || '';
 
 const envConfigFile = `export const environment = {
   supabaseUrl: '${supabaseUrl}',
-  supabaseKey: '${supabaseKey}'
-  cloudinaryCloudName: '${cloudinaryCloudName}'
-  cloudinaryUploadPreset: '${cloudinaryUploadPreset}'
+  supabaseKey: '${supabaseKey}',
+  cloudinaryCloudName: '${cloudinaryCloudName}',
+  cloudinaryUploadPreset: '${cloudinaryUploadPreset}',
 
 };
 `;
