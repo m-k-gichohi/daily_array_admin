@@ -1,0 +1,242 @@
+.tda-bs-page {
+  max-width: 1200px;
+}
+.tda-bs-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #b5832a;
+}
+.tda-bs-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 400;
+  color: #1a1a1a;
+}
+.tda-btn-primary {
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  transition: background 0.2s;
+}
+.tda-btn-primary:hover {
+  background: #b5832a;
+  color: #fff;
+}
+.tda-bs-card {
+  background: #fff;
+  border: 1px solid #f0ead8;
+  border-radius: 4px;
+}
+.tda-cat-card {
+  background: #fff;
+  border: 1px solid #f0ead8;
+  border-radius: 4px;
+  padding: 1.25rem;
+  height: 100%;
+}
+.tda-cat-num {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: rgba(181, 131, 42, 0.25);
+  line-height: 1;
+  flex-shrink: 0;
+}
+.tda-cat-name {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+.tda-cat-slug {
+  font-size: 0.75rem;
+  color: #b5832a;
+  font-weight: 500;
+}
+.tda-cat-desc {
+  font-size: 0.8125rem;
+  color: #888;
+  line-height: 1.55;
+}
+.tda-badge {
+  font-size: 0.625rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+.tda-badge--red {
+  background: #dc3545;
+  color: #fff;
+}
+.tda-icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #f0ead8;
+  background: #fff;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.15s;
+}
+.tda-icon-btn:hover {
+  border-color: #1a1a2e;
+  color: #1a1a2e;
+  background: #fdf8ef;
+}
+.tda-icon-btn--danger:hover {
+  border-color: #dc3545;
+  color: #dc3545;
+  background: #fff5f5;
+}
+.tda-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+}
+.tda-modal {
+  background: #fff;
+  border-radius: 4px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 100%;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+  margin-top: 2vh;
+}
+.tda-modal--lg {
+  max-width: 640px;
+}
+.tda-modal-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+.tda-modal-body {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.6;
+}
+.tda-close-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 4px;
+}
+.tda-field-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  display: block;
+  margin-bottom: 5px;
+}
+.tda-input {
+  border: 1px solid #f0ead8;
+  border-radius: 2px;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  background: #fdf8ef;
+}
+.tda-input:focus {
+  border-color: #b5832a;
+  box-shadow: 0 0 0 3px rgba(181, 131, 42, 0.1);
+  background: #fff;
+}
+.tda-field-error {
+  font-size: 0.8125rem;
+  color: #dc3545;
+  background: #fff5f5;
+  border: 1px solid #ffd7d7;
+  border-radius: 2px;
+  padding: 0.5rem 0.75rem;
+}
+.tda-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: #fdf8ef;
+  border-radius: 4px;
+}
+.tda-switch-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+.tda-switch-hint {
+  font-size: 0.75rem;
+  color: #888;
+}
+.tda-switch {
+  width: 2.5rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+.tda-switch:checked {
+  background-color: #b5832a;
+  border-color: #b5832a;
+}
+.tda-btn-save {
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.625rem 1.25rem;
+}
+.tda-btn-save:hover:not(:disabled) {
+  background: #b5832a;
+}
+.tda-btn-cancel {
+  border: 1px solid #f0ead8;
+  background: #fff;
+  color: #888;
+  border-radius: 2px;
+  font-size: 0.875rem;
+  padding: 0.625rem 1rem;
+}
+.tda-btn-confirm-delete {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+}
+.tda-skeleton {
+  background: linear-gradient(90deg, #f0ead8 25%, #f8f5ef 50%, #f0ead8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

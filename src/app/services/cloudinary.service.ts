@@ -7,10 +7,11 @@ export class CloudinaryService {
   private readonly uploadPreset = environment.cloudinaryUploadPreset;
   private readonly uploadUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/upload`;
 
-  async uploadImage(file: File): Promise<string> {
+  async uploadImage(file: File,folder: 'pins' | 'products' = 'products'): Promise<string> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', this.uploadPreset);
+    formData.append('folder', folder);
 
     const response = await fetch(this.uploadUrl, {
       method: 'POST',

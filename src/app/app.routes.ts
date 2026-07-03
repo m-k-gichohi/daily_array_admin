@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, publicGuard } from './backstage/guards/auth.guard';
+import { pinsBoardsResolver } from './backstage/pins/resolver/pins-boards-resolver';
 
 export const routes: Routes = [
 
@@ -53,6 +54,14 @@ export const routes: Routes = [
         path: 'analytics',
         loadComponent: () => import('./backstage/analytics/analytics.component').then(m => m.AnalyticsComponent),
         title: 'Analytics'
+      },
+       {
+        path: 'pins',
+        loadComponent: () => import('./backstage/pins/pins.component').then(m => m.PinsComponent),
+        title: 'Pins',
+        resolve: {
+      boards: pinsBoardsResolver
+    }
       },
       {
         path: '',

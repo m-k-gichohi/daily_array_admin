@@ -154,7 +154,7 @@ export class ProductFormComponent implements OnInit {
     this.uploadError.set(null);
     this.uploadingImage.set(true);
     try {
-      const url = await this.cloudinary.uploadImage(file);
+      const url = await this.cloudinary.uploadImage(file,'products');
       this.form = { ...this.form, image_url: url };
       this.saveDraft();
     } catch (e) {

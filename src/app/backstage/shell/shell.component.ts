@@ -57,6 +57,12 @@ import { AuthService } from '../../services/auth.service';
             <i class="bi bi-box-arrow-up-right tda-nav-icon"></i>
             @if (!collapsed()) { <span>View site</span> }
           </a>
+
+             <a routerLink="/backstage/pins" routerLinkActive="active"
+            class="tda-nav-link d-flex align-items-center gap-3">
+            <i class="bi bi-pin-angle-fill tda-nav-icon"></i>
+            @if (!collapsed()) { <span>Pins</span> }
+          </a>
         </nav>
 
         <!-- User + Sign out -->

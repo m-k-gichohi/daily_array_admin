@@ -1,0 +1,172 @@
+ <div class="tda-bs-page">
+
+      <!-- Header -->
+      <div class="d-flex align-items-start justify-content-between mb-4 flex-wrap gap-3">
+        <div>
+          <p class="tda-bs-eyebrow mb-1">Manage</p>
+          <h1 class="tda-bs-title mb-0">Categories</h1>
+        </div>
+        <button class="btn tda-btn-primary d-flex align-items-center gap-2"
+          (click)="openModal()">
+          <i class="bi bi-plus-lg"></i> Add category
+        </button>
+      </div>
+
+      <!-- List -->
+      @if (loading()) {
+        <div class="row g-3">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="col-md-6"><div class="tda-skeleton" style="height:120px"></div></div>
+          }
+        </div>
+      } @else if (categories().length === 0) {
+        <div class="tda-bs-card p-5 text-center">
+          <i class="bi bi-collection fs-1 text-muted mb-3 d-block"></i>
+          <p class="text-muted mb-3">No categories yet.</p>
+          <button class="btn tda-btn-primary" (click)="openModal()">Add your first category</button>
+        </div>
+      } @else {
+        <div class="row g-3">
+          @for (cat of categories(); track cat.id; let i = $index) {
+            <div class="col-md-6">
+              <div class="tda-cat-card">
+                <div class="d-flex align-items-start justify-content-between gap-3">
+                  <div class="flex-grow-1 min-width-0">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                      <span class="tda-cat-num">0{{ i + 1 }}</span>
+                      <h3 class="tda-cat-name mb-0">{{ cat.name }}</h3>
+                      @if (!cat.is_active) {
+                        <span class="tda-badge tda-badge--red">Hidden</span>
+                      }
+                    </div>
+                    <p class="tda-cat-slug mb-2">/categories/{{ cat.slug }}</p>
+                    @if (cat.description) {
+                      <p class="tda-cat-desc mb-0">{{ cat.description }}</p>
+                    }
+                  </div>
+                  <div class="d-flex gap-2 flex-shrink-0">
+                    <button class="tda-icon-btn" (click)="openModal(cat)" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="tda-icon-btn tda-icon-btn--danger" (click)="confirmDelete(cat)" title="Delete">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+
+    <!-- ── MODAL FORM ── -->
+    @if (showModal()) {
+      <div class="tda-modal-backdrop" (click)="closeModal()">
+        <div class="tda-modal tda-modal--lg" (click)="$event.stopPropagation()">
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <h3 class="tda-modal-title mb-0">
+              {{ editingCat() ? 'Edit category' : 'Add category' }}
+            </h3>
+            <button class="tda-close-btn" (click)="closeModal()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="tda-field-label">Category name *</label>
+              <input type="text" class="form-control tda-input"
+                [(ngModel)]="form.name" (input)="autoSlug()"
+                placeholder="e.g. Best Pillows & Bedding" />
+            </div>
+            <div class="col-md-6">
+              <label class="tda-field-label">URL slug *</label>
+              <input type="text" class="form-control tda-input"
+                [(ngModel)]="form.slug"
+                placeholder="e.g. pillows-bedding" />
+              <small class="text-muted" style="font-size:0.75rem">/categories/{{ form.slug || 'your-slug' }}</small>
+            </div>
+            <div class="col-md-6">
+              <label class="tda-field-label">Subdomain *</label>
+              <input type="text" class="form-control tda-input"
+                [(ngModel)]="form.subdomain"
+                placeholder="e.g. pillows" />
+            </div>
+            <div class="col-12">
+              <label class="tda-field-label">Description *</label>
+              <textarea class="form-control tda-input" rows="2"
+                [(ngModel)]="form.description"
+                placeholder="Short description shown on the category page"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="tda-field-label">Meta description (SEO) *</label>
+              <textarea class="form-control tda-input" rows="2"
+                [(ngModel)]="form.meta_description"
+                placeholder="160 character SEO description for Google"></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="tda-field-label">Hero tagline *</label>
+              <input type="text" class="form-control tda-input"
+                [(ngModel)]="form.hero_tagline"
+                placeholder="e.g. The right pillow changes everything." />
+            </div>
+            <div class="col-md-6">
+              <label class="tda-field-label">Display order</label>
+              <input type="number" class="form-control tda-input"
+                [(ngModel)]="form.display_order" min="0" />
+            </div>
+            <div class="col-12">
+              <label class="tda-field-label">Hero section HTML *</label>
+              <textarea class="form-control tda-input" rows="4"
+                [(ngModel)]="form.hero_html"
+                placeholder="Paste your hero section HTML code here..."></textarea>
+            </div>
+            <div class="col-12">
+              <div class="tda-switch-row">
+                <div>
+                  <p class="tda-switch-label mb-0">Active / Visible</p>
+                  <p class="tda-switch-hint mb-0">Hidden categories won't appear on the site</p>
+                </div>
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input tda-switch" type="checkbox"
+                    [(ngModel)]="form.is_active" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          @if (formError()) {
+            <div class="tda-field-error mt-3">{{ formError() }}</div>
+          }
+
+          <div class="d-flex gap-2 justify-content-end mt-4">
+            <button class="btn tda-btn-cancel" (click)="closeModal()">Cancel</button>
+            <button class="btn tda-btn-save px-4" [disabled]="formSaving()" (click)="save()">
+              @if (formSaving()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              {{ editingCat() ? 'Update' : 'Add category' }}
+            </button>
+          </div>
+        </div>
+      
+      </div>
+    }
+
+    <!-- Delete confirm -->
+    @if (deleteTarget()) {
+      <div class="tda-modal-backdrop" (click)="deleteTarget.set(null)">
+        <div class="tda-modal" (click)="$event.stopPropagation()">
+          <h3 class="tda-modal-title mb-2">Delete category?</h3>
+          <p class="tda-modal-body mb-4">
+            "<strong>{{ deleteTarget()!.name }}</strong>" will be deleted. Products in this category will not be deleted but will lose their category assignment.
+          </p>
+          <div class="d-flex gap-2 justify-content-end">
+            <button class="btn tda-btn-cancel" (click)="deleteTarget.set(null)">Cancel</button>
+            <button class="btn tda-btn-confirm-delete" (click)="deleteCategory()">Delete</button>
+          </div>
+        </div>
+      </div>
+    }
