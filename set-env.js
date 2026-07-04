@@ -5,6 +5,9 @@ const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
 const cloudinaryCloudName = process.env.CLOUDINARY_CLOUD_NAME || '';
 const cloudinaryUploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || '';
+const pinterestClientId = process.env.PINTEREST_CLIENT_ID || '';
+const pinterestClientSecret = process.env.PINTEREST_CLIENT_SECRET || '';
+const pinterestRedirectUri = process.env.PINTEREST_REDIRECT_URI || '';
 
 
 const envConfigFile = `export const environment = {
@@ -12,6 +15,9 @@ const envConfigFile = `export const environment = {
   supabaseKey: '${supabaseKey}',
   cloudinaryCloudName: '${cloudinaryCloudName}',
   cloudinaryUploadPreset: '${cloudinaryUploadPreset}',
+  pinterestClientId: '${pinterestClientId}',
+  pinterestClientSecret: '${pinterestClientSecret}',
+  pinterestRedirectUri: '${pinterestRedirectUri}',
 
 };
 `;

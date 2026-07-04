@@ -12,14 +12,26 @@
         </button>
       </div>
 
-      <!-- API status banner -->
+      <!-- Pinterest connection status -->
       <div class="tda-api-banner mb-4">
-        <i class="bi bi-hourglass-split me-2"></i>
-        <span>
-          Pinterest API access pending approval. Pins saved here are stored as
-          <strong>scheduled</strong> and will post automatically once your API access is active —
-          nothing is lost while you wait.
-        </span>
+        @if (pinterestStatusLoading()) {
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-hourglass-split"></i>
+            <span>Checking Pinterest connection…</span>
+          </div>
+        } @else if (pinterestConnected()) {
+          <span class="tda-connect-badge">
+            <i class="bi bi-check-circle-fill"></i>
+            Connected as {{ pinterestUsername() || '@TheDailyArray' }}
+          </span>
+        } @else {
+          <div class="d-flex align-items-center flex-wrap gap-2">
+            <button class="btn tda-connect-button" (click)="connectPinterest()">
+              Connect Pinterest
+            </button>
+            <span>Connect your account to load boards and unlock Pinterest scheduling.</span>
+          </div>
+        }
       </div>
 
       <!-- Filter tabs -->

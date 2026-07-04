@@ -31,6 +31,40 @@ export class SupabaseService {
     return this.db.auth.onAuthStateChange(callback);
   }
 
+  async getUserId(): Promise<string | null> {
+    const user = await this.getUser();
+    return user?.data?.user?.id ?? null;
+  }
+
+  async getPinterestToken(): Promise<any | null> {
+    const userId = await this.getUserId();
+    if (!userId) return null;
+
+    const { data, error } = await this.db
+      .from('pinterest_tokens')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (error && (error as any).code !== 'PGRST116') throw error;
+    return data ?? null;
+  }
+
+  async upsertPinterestToken(token: Record<string, any>): Promise<void> {
+    const userId = await this.getUserId();
+
+
+ 
+
+    if (!userId) throw new Error('Not authenticated');
+
+    const { error } = await this.db
+      .from('pinterest_tokens')
+      .upsert({ user_id: userId, ...token }, { onConflict: 'user_id' });
+
+    if (error) throw error;
+  }
+
   // ── PUBLIC: CATEGORIES ──
   async getCategories(): Promise<Category[]> {
     const { data, error } = await this.db

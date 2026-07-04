@@ -14,10 +14,36 @@
       font-size: 0.8125rem;
       color: #6b5318;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
       line-height: 1.6;
     }
-    .tda-api-banner i { font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
+    .tda-api-banner i { font-size: 1rem; flex-shrink: 0; }
+    .tda-connect-button {
+      background: #1a1a2e;
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      padding: 0.55rem 1rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .tda-connect-button:hover { background: #b5832a; }
+    .tda-connect-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #e7f7ed;
+      color: #0f5132;
+      border: 1px solid #c7eed3;
+      padding: 0.5rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+    .tda-connect-badge i { color: #198754; }
 
     /* Filter tabs */
     .tda-filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }

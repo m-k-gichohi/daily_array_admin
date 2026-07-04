@@ -8,6 +8,7 @@ import {
 } from "@angular/core";
 import { Product, Category } from "src/app/models";
 import { AdminService } from "src/app/services/admin.service";
+import { PinterestAuthService } from "../../services/pinterest-auth.service";
 import { PinterestPin } from "./model/pins";
 import { FormsModule } from "@angular/forms";
 import { PinterestBoard } from "./model/pin-boards";
@@ -22,6 +23,7 @@ import { ActivatedRoute } from "@angular/router";
 })
 export class PinsComponent implements OnInit {
   private readonly admin = inject(AdminService);
+  private readonly auth = inject(PinterestAuthService) as PinterestAuthService;
 
   readonly pins = signal<PinterestPin[]>([]);
   readonly products = signal<Product[]>([]);
@@ -30,6 +32,9 @@ export class PinsComponent implements OnInit {
   readonly filter = signal<"all" | "draft" | "scheduled" | "posted" | "failed">(
     "all",
   );
+  readonly pinterestConnected = signal(false);
+  readonly pinterestUsername = signal<string | null>(null);
+  readonly pinterestStatusLoading = signal(true);
 
   readonly showModal = signal(false);
   readonly editingPin = signal<PinterestPin | null>(null);
@@ -60,12 +65,11 @@ export class PinsComponent implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    await this.load();
+    await Promise.all([this.load(), this.updatePinterestStatus()]);
 
     this.route.data.subscribe((data) => {
       this.boards.set(data["boards"]);
 
-      console.log(this.boards());
     });
   }
 
@@ -80,7 +84,6 @@ export class PinsComponent implements OnInit {
       this.pins.set(pins as PinterestPin[]);
       this.products.set(products);
 
-      console.log(this.products())
       this.categories.set(categories);
     } finally {
       this.loading.set(false);
@@ -199,6 +202,18 @@ export class PinsComponent implements OnInit {
 
   confirmDelete(pin: PinterestPin): void {
     this.deleteTarget.set(pin);
+  }
+
+  connectPinterest(): void {
+    this.auth.redirectToPinterestLogin();
+  }
+
+  async updatePinterestStatus(): Promise<void> {
+    this.pinterestStatusLoading.set(true);
+    const status = await this.auth.getConnectionStatus();
+    this.pinterestConnected.set(status.connected);
+    this.pinterestUsername.set(status.username);
+    this.pinterestStatusLoading.set(false);
   }
 
   async deletePin(): Promise<void> {

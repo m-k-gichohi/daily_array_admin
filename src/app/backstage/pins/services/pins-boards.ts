@@ -1,14 +1,15 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
-import { Observable, throwError, of, concat } from "rxjs";
-import { catchError, map, expand, takeWhile, reduce } from "rxjs/operators";
+import { Observable, throwError, of, from } from "rxjs";
+import { catchError, switchMap, expand, takeWhile, reduce } from "rxjs/operators";
 import { PinterestBoardsResponse, PinterestBoard } from "../model/pin-boards";
+import { PinterestAuthService } from "../../../services/pinterest-auth.service";
 @Injectable({
   providedIn: "root",
 })
 export class PinsBoardsService {
   private readonly baseUrl = "https://api.pinterest.com/v5";
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: PinterestAuthService) {}
 
   /**
    * Fetch boards with pagination support
@@ -39,17 +40,24 @@ export class PinsBoardsService {
         params.includeArchived.toString(),
       );
 
-    const headers = new HttpHeaders({
-      Authorization: `Bearer `, // ← Replace or inject
-      "Content-Type": "application/json",
-    });
+    return from(this.auth.getAccessToken()).pipe(
+      switchMap((accessToken) => {
+        if (!accessToken) {
+          return of({ items: [], bookmark: undefined } as PinterestBoardsResponse);
+        }
 
-    return this.http
-      .get<PinterestBoardsResponse>(`${this.baseUrl}/boards`, {
-        headers,
-        params: httpParams,
-      })
-      .pipe(catchError(this.handleError));
+        const headers = new HttpHeaders({
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        });
+
+        return this.http.get<PinterestBoardsResponse>(`${this.baseUrl}/boards`, {
+          headers,
+          params: httpParams,
+        });
+      }),
+      catchError(this.handleError),
+    );
   }
 
   /**
@@ -73,17 +81,24 @@ export class PinsBoardsService {
    * Get single board
    */
   getBoard(boardId: string): Observable<PinterestBoard> {
-    const headers = new HttpHeaders({
-      Authorization: `Bearer YOUR_ACCESS_TOKEN`,
-    });
+    return from(this.auth.getAccessToken()).pipe(
+      switchMap((accessToken) => {
+        if (!accessToken) {
+          return throwError(() => new Error("No Pinterest token available."));
+        }
 
-    return this.http
-      .get<PinterestBoard>(`${this.baseUrl}/boards/${boardId}`, { headers })
-      .pipe(catchError(this.handleError));
+        const headers = new HttpHeaders({
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        });
+
+        return this.http.get<PinterestBoard>(`${this.baseUrl}/boards/${boardId}`, { headers });
+      }),
+      catchError(this.handleError),
+    );
   }
 
   private handleError(error: any) {
-    console.error("Pinterest API Error:", error);
 
     let message = "Failed to fetch Pinterest boards";
 
@@ -102,3 +117,5 @@ export class PinsBoardsService {
     console.log("Pinterest access token updated");
   }
 }
+
+
