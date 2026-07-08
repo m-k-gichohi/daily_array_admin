@@ -166,7 +166,7 @@ export class AdminService {
     const { data, error } = await this.db.db
       .from('pinterest_pins')
       .select('*, product:products(name)')
-      .order('post_date', { ascending: true, nullsFirst: false });
+      .order('publish_at', { ascending: true, nullsFirst: false });
     if (error) throw error;
     return data ?? [];
   }

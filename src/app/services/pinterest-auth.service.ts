@@ -7,7 +7,7 @@ import { SupabaseService } from "./supabase.service";
 export interface PinterestTokenRecord {
   access_token: string;
   refresh_token: string;
-  expires_at: number;
+  expires_at: number | string;
   expires_in: number;
   scope: string;
   username: string;
@@ -18,7 +18,7 @@ export class PinterestAuthService {
   private readonly authorizeUrl = "https://www.pinterest.com/oauth";
   private readonly tokenUrl = "https://api.pinterest.com/v5/oauth/token";
   private readonly scope_app =
-    "boards:read,pins:read,pins:write,user_accounts:read";
+    "boards:read,pins:read,pins:write,user_accounts:read,boards:write";
 
   private readonly clientId = environment.pinterestClientId;
   private readonly clientSecret = environment.pinterestClientSecret;
@@ -70,18 +70,14 @@ export class PinterestAuthService {
 
     try {
       const tokenData = await this.exchangeCodeForToken(code);
-         const payload = {
-    access_token: tokenData.access_token,
-    refresh_token: tokenData.refresh_token,
-    scope:tokenData.scope,
-    username:tokenData.username,
-    expires_in:tokenData.expires_in,
-    expires_at: new Date(tokenData.expires_at).toISOString(),   // Convert number → ISO
-    
-  };
+      const payload = {
+        ...tokenData,
+        expires_at: this.toSupabaseExpiresAt(tokenData.expires_at),
+      };
       await this.supabase.upsertPinterestToken(payload);
       this.tokenCache = tokenData;
     } catch (error) {
+      console.warn("Pinterest token exchange failed:", error);
     }
   }
 
@@ -98,8 +94,8 @@ export class PinterestAuthService {
     this.tokenCache = {
       access_token: token.access_token,
       refresh_token: token.refresh_token,
-        expires_in: token.expires_in,
-      expires_at: token.expires_at,
+      expires_in: token.expires_in,
+      expires_at: this.getExpiresAtMs(token.expires_at),
       scope: token.scope,
       username: token.username,
     };
@@ -113,7 +109,7 @@ export class PinterestAuthService {
 
    
 
-    if (Date.now() > token.expires_at - 60_000) {
+    if (Date.now() > this.getExpiresAtMs(token.expires_at) - 60_000) {
       if (!token.refresh_token) return null;
       const refreshed = await this.refreshAccessToken(token.refresh_token);
       await this.supabase.upsertPinterestToken(refreshed);
@@ -133,9 +129,7 @@ export class PinterestAuthService {
       return { connected: false, username: null };
     }
 
- 
-
-    if (Date.now() > token.expires_at - 60_000 && token.refresh_token) {
+    if (Date.now() > this.getExpiresAtMs(token.expires_at) - 60_000 && token.refresh_token) {
       try {
         const refreshed = await this.refreshAccessToken(token.refresh_token);
         await this.supabase.upsertPinterestToken(refreshed);
@@ -147,6 +141,45 @@ export class PinterestAuthService {
     }
 
     return { connected: true, username: token.username };
+  }
+
+  async disconnectPinterest(): Promise<void> {
+    const token = await this.getPinterestToken();
+
+    if (token?.access_token) {
+      try {
+        await firstValueFrom(
+          this.http.post(
+            "https://api.pinterest.com/v5/oauth/token/revoke",
+            {},
+            {
+              headers: new HttpHeaders({
+                Authorization: `Bearer ${token.access_token}`,
+                "Content-Type": "application/json",
+              }),
+            },
+          ),
+        );
+      } catch (error) {
+        console.warn("Pinterest revoke request failed:", error);
+      }
+    }
+
+    await this.supabase.deletePinterestToken();
+    this.tokenCache = null;
+  }
+
+  private getExpiresAtMs(expiresAt: number | string): number {
+    if (typeof expiresAt === "number") {
+      return expiresAt;
+    }
+
+    const parsed = Date.parse(expiresAt);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+
+  private toSupabaseExpiresAt(expiresAt: number | string): string {
+    return new Date(this.getExpiresAtMs(expiresAt)).toISOString();
   }
 
   private async exchangeCodeForToken(

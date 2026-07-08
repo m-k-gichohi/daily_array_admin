@@ -27,6 +27,7 @@ export interface Product {
   tagline: string;
   description: string;
   amazon_url: string;
+  asin:string,
   image_url: string;
   is_featured: boolean;
   is_active: boolean;

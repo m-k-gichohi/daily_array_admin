@@ -53,14 +53,31 @@ export class SupabaseService {
   async upsertPinterestToken(token: Record<string, any>): Promise<void> {
     const userId = await this.getUserId();
 
-
- 
-
     if (!userId) throw new Error('Not authenticated');
+
+    const payload: Record<string, any> = { user_id: userId, ...token };
+    const expiresAt = payload['expires_at'];
+    if (expiresAt instanceof Date) {
+      payload['expires_at'] = expiresAt.toISOString();
+    } else if (typeof expiresAt === 'number') {
+      payload['expires_at'] = new Date(expiresAt).toISOString();
+    }
 
     const { error } = await this.db
       .from('pinterest_tokens')
-      .upsert({ user_id: userId, ...token }, { onConflict: 'user_id' });
+      .upsert(payload, { onConflict: 'user_id' });
+
+    if (error) throw error;
+  }
+
+  async deletePinterestToken(): Promise<void> {
+    const userId = await this.getUserId();
+    if (!userId) return;
+
+    const { error } = await this.db
+      .from('pinterest_tokens')
+      .delete()
+      .eq('user_id', userId);
 
     if (error) throw error;
   }

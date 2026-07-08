@@ -13,15 +13,19 @@ import { PinterestPin } from "./model/pins";
 import { FormsModule } from "@angular/forms";
 import { PinterestBoard } from "./model/pin-boards";
 import { ActivatedRoute } from "@angular/router";
+import { ImageUploadComponent } from "src/app/shared/image-upload/image-upload.component";
+import { DateTime } from "luxon";
 
 @Component({
   selector: "app-pins",
-  imports: [FormsModule],
+  imports: [FormsModule, ImageUploadComponent],
   templateUrl: "./pins.component.html",
   styleUrl: "./pins.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PinsComponent implements OnInit {
+  private storageKey = "tda-pin-form-draft-new";
+
   private readonly admin = inject(AdminService);
   private readonly auth = inject(PinterestAuthService) as PinterestAuthService;
 
@@ -35,16 +39,17 @@ export class PinsComponent implements OnInit {
   readonly pinterestConnected = signal(false);
   readonly pinterestUsername = signal<string | null>(null);
   readonly pinterestStatusLoading = signal(true);
+  readonly disconnectingPinterest = signal(false);
 
   readonly showModal = signal(false);
   readonly editingPin = signal<PinterestPin | null>(null);
   readonly deleteTarget = signal<PinterestPin | null>(null);
   readonly formSaving = signal(false);
   readonly formError = signal<string | null>(null);
-    readonly boards = signal<PinterestBoard[]>([]);
+  readonly boards = signal<PinterestBoard[]>([]);
 
-    route = inject(ActivatedRoute);
-  
+  route = inject(ActivatedRoute);
+
   scheduleDate = "";
   scheduleTime = "";
 
@@ -52,10 +57,15 @@ export class PinsComponent implements OnInit {
     product_id: null,
     category_id: null,
     board_name: "",
+    board_id:"",
     pin_title: "",
     pin_description: "",
     destination_url: "",
     status: "draft",
+    image_url: "",
+    is_amazon_redirect: true,
+    is_ai_generated: false,
+    alt_text:"",
   };
 
   readonly filteredPins = computed(() => {
@@ -66,11 +76,14 @@ export class PinsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await Promise.all([this.load(), this.updatePinterestStatus()]);
+    const id = this.route.snapshot.paramMap.get("id");
+    this.storageKey = this.getDraftKey(id);
 
     this.route.data.subscribe((data) => {
       this.boards.set(data["boards"]);
-
     });
+
+    this.loadDraft();
   }
 
   async load(): Promise<void> {
@@ -123,21 +136,21 @@ export class PinsComponent implements OnInit {
     if (pin) {
       this.editingPin.set(pin);
       this.form = { ...pin };
-      if (pin.post_date) {
-        const date = new Date(pin.post_date);
-        this.scheduleDate = date.toISOString().substring(0, 10);
-        this.scheduleTime = pin.post_time_est!;
-      }
+  
     } else {
       this.editingPin.set(null);
       this.form = {
         product_id: null,
         category_id: null,
         board_name: "",
+        board_id:"",
         pin_title: "",
         pin_description: "",
         destination_url: "",
         status: "draft",
+        alt_text:"",
+        is_amazon_redirect: true,
+        is_ai_generated: false,
       };
       this.scheduleDate = "";
       this.scheduleTime = "";
@@ -151,11 +164,27 @@ export class PinsComponent implements OnInit {
   }
 
   onProductSelected(): void {
-    const product = this.products().find((p) => p.id === this.form.product_id);
-    if (product) {
-      this.form.destination_url = `https://dailyarrayshop.com/products/${product.slug}`;
-      this.form.category_id = product.category_id;
+    if (!this.form.is_amazon_redirect) {
+      const product = this.products().find(
+        (p) => p.id === this.form.product_id,
+      );
+      if (product) {
+        this.form.destination_url = `https://dailyarrayshop.com/products/${product.slug}`;
+        this.form.category_id = product.category_id;
+      }
     }
+  }
+
+
+  onBoardSelected(value: string): void {
+    const selectedBoard = this.boards().find((board) => board.name === value);
+
+    this.form = {
+      ...this.form,
+      board_name: value,
+      board_id: selectedBoard?.id ?? "",
+    };
+    this.saveDraft();
   }
 
   async save(): Promise<void> {
@@ -163,26 +192,34 @@ export class PinsComponent implements OnInit {
       !this.form.pin_title?.trim() ||
       !this.form.pin_description?.trim() ||
       !this.form.board_name?.trim() ||
-      !this.form.destination_url?.trim()
+      !this.form.destination_url?.trim()||!this.form.alt_text?.trim()
     ) {
       this.formError.set(
-        "Pin title, description, board and destination URL are required.",
+        "Pin title, description, board,alt text and destination URL are required.",
       );
       return;
     }
 
-  
-
-  
+    if (!this.scheduleDate || !this.scheduleTime) {
+      this.formError.set("Schedule date and time are required.");
+      return;
+    }
 
     this.formSaving.set(true);
     this.formError.set(null);
 
+    const publishAt = DateTime.fromISO(
+      `${this.scheduleDate}T${this.scheduleTime}`,
+      {
+        zone: "America/New_York",
+      },
+    )
+      .toUTC()
+      .toISO();
+
     const payload: Partial<PinterestPin> = {
       ...this.form,
-      post_date: this.scheduleDate,
-            post_time_est: this.scheduleTime,
-
+      publish_at: publishAt || "",
     };
 
     try {
@@ -208,6 +245,17 @@ export class PinsComponent implements OnInit {
     this.auth.redirectToPinterestLogin();
   }
 
+  async disconnectPinterest(): Promise<void> {
+    this.disconnectingPinterest.set(true);
+    try {
+      await this.auth.disconnectPinterest();
+      this.pinterestConnected.set(false);
+      this.pinterestUsername.set(null);
+    } finally {
+      this.disconnectingPinterest.set(false);
+    }
+  }
+
   async updatePinterestStatus(): Promise<void> {
     this.pinterestStatusLoading.set(true);
     const status = await this.auth.getConnectionStatus();
@@ -222,5 +270,84 @@ export class PinsComponent implements OnInit {
     await this.admin.deletePin(target.id);
     this.pins.update((list) => list.filter((p) => p.id !== target.id));
     this.deleteTarget.set(null);
+  }
+
+  onImageUrlChange(url: string | null): void {
+    this.form = { ...this.form, image_url: url ?? "" };
+    this.saveDraft();
+  }
+  onDescriptionChange(value: string): void {
+    this.form.pin_description = value;
+    this.saveDraft();
+  }
+
+    onAltTextChange(value: string): void {
+    this.form.alt_text = value;
+    this.saveDraft();
+  }
+
+  onTitleChange(value: string): void {
+    this.form.pin_title = value;
+    this.saveDraft();
+  }
+
+  onDestinationUrlChange(value: string): void {
+    this.form.destination_url = value;
+    this.saveDraft();
+  }
+
+  private saveDraft(): void {
+    try {
+      localStorage.setItem(
+        this.storageKey,
+        JSON.stringify({
+          image_url: this.form.image_url,
+          pin_description: this.form.pin_description,
+          alt_text:this.form.alt_text,
+          pin_title: this.form.pin_title,
+          destination_url: this.form.destination_url,
+        }),
+      );
+    } catch {
+      // Ignore localStorage errors.
+    }
+  }
+
+  private getDraftKey(id: string | null): string {
+    return id ? `tda-product-form-draft-${id}` : "tda-product-form-draft-new";
+  }
+
+  private loadDraft(): void {
+    try {
+      const raw = localStorage.getItem(this.storageKey);
+      if (!raw) return;
+      const draft = JSON.parse(raw) as {
+        image_url?: string;
+        pin_description?: string;
+        pin_title?: string;
+        destination_url?: string;
+        alt_text?:string;
+      };
+      if (draft.image_url) {
+        this.form.image_url = draft.image_url;
+      }
+      if (draft.pin_description) {
+        this.form.pin_description = draft.pin_description;
+      }
+
+      if (draft.pin_title) {
+        this.form.pin_title = draft.pin_title;
+      }
+
+      if (draft.destination_url) {
+        this.form.destination_url = draft.destination_url;
+      }
+
+      if(draft.alt_text){
+        this.form.alt_text = draft.alt_text;
+      }
+    } catch {
+      // Ignore invalid draft data.
+    }
   }
 }
