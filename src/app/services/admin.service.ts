@@ -157,4 +157,36 @@ export class AdminService {
     const { data } = await this.db.db.rpc('get_traffic_sources');
     return data ?? [];
   }
+
+    // ════════════════════════════════════
+  // PINTEREST PINS (scheduling, pending API access)
+  // ════════════════════════════════════
+
+  async getAllPins(): Promise<any[]> {
+    const { data, error } = await this.db.db
+      .from('pinterest_pins')
+      .select('*, product:products(name)')
+      .order('publish_at', { ascending: true, nullsFirst: false });
+    if (error) throw error;
+    return data ?? [];
+  }
+
+  async createPin(pin: Record<string, any>): Promise<void> {
+    const { error } = await this.db.db.from('pinterest_pins').insert(pin);
+    if (error) throw error;
+  }
+
+  async updatePin(id: string, pin: Record<string, any>): Promise<void> {
+    const { error } = await this.db.db
+      .from('pinterest_pins')
+      .update(pin)
+      .eq('id', id);
+    if (error) throw error;
+  }
+
+  async deletePin(id: string): Promise<void> {
+    const { error } = await this.db.db
+      .from('pinterest_pins').delete().eq('id', id);
+    if (error) throw error;
+  }
 }

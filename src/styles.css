@@ -94,9 +94,63 @@ body.tda-backstage {
 
 /* ── ROUTE TRANSITIONS ── */
 @keyframes routeFadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 main > * {
   animation: routeFadeIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Global modal styles: ensure overlays cover the full viewport and sit above layout */
+.tda-modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,0.45) !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  padding: 2rem 1rem !important;
+  overflow-y: auto !important;
+}
+.tda-modal {
+  background: #fff !important;
+  border-radius: 4px !important;
+  padding: 2rem !important;
+  max-width: 640px !important;
+  width: 100% !important;
+  max-height: calc(100vh - 4rem) !important;
+  overflow-y: auto !important;
+  margin-top: 2vh !important;
+}
+
+.tda-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f8f5ef;
+}
+.tda-switch-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.tda-switch-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+.tda-switch-hint {
+  font-size: 0.75rem;
+  color: #888;
+}
+.tda-switch {
+  width: 2.5rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+.tda-switch:checked {
+  background-color: #b5832a;
+  border-color: #b5832a;
 }

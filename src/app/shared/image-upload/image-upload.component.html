@@ -1,0 +1,70 @@
+<div class="tda-form-section mb-4">
+  <p class="tda-form-section-title">{{ label() }}</p>
+
+  <div
+    class="tda-drop-zone"
+    [class.tda-drop-zone--has-image]="imageUrl()"
+    [class.tda-drop-zone--dragging]="isDragging()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave()"
+    (drop)="onDrop($event)"
+    (click)="fileInput.click()"
+  >
+    @if (uploadingImage()) {
+      <div class="tda-upload-progress">
+        <div class="tda-spinner mb-2"></div>
+        <p class="mb-0" style="font-size: 0.8125rem; color: #888">
+          Uploading to Cloudinary...
+        </p>
+      </div>
+    } @else if (imageUrl()) {
+      <img [src]="imageUrl()" alt="Product" class="tda-drop-preview" />
+      <div class="tda-drop-overlay">
+        <i class="bi bi-arrow-repeat fs-4"></i>
+        <p class="mb-0 mt-1" style="font-size: 0.8125rem">
+          Click or drag to replace
+        </p>
+      </div>
+    } @else {
+      <div class="tda-drop-empty">
+        <i class="bi bi-cloud-arrow-up fs-2 mb-2 text-muted"></i>
+        <p class="mb-1" style="font-size: 0.875rem; color: #555">
+          Drag &amp; drop image here
+        </p>
+        <p class="mb-0" style="font-size: 0.75rem; color: #aaa">
+          or click to browse
+        </p>
+      </div>
+    }
+  </div>
+
+  <input
+    #fileInput
+    type="file"
+    accept="image/*"
+    class="d-none"
+    (change)="onFileSelected($event)"
+  />
+
+  @if (error()) {
+    <div class="tda-field-error mt-2">{{ error() }}</div>
+  }
+
+  @if (imageUrl()) {
+    <div class="tda-image-url-row">
+      <div class="tda-image-url-preview">
+        <label class="tda-field-label">Image URL</label>
+        <a [href]="imageUrl()" target="_blank" class="tda-image-url-link">
+          {{ imageUrl() }}
+        </a>
+      </div>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary tda-image-url-copy"
+        (click)="copyImageUrl(imageUrl()!)"
+      >
+        Copy
+      </button>
+    </div>
+  }
+</div>

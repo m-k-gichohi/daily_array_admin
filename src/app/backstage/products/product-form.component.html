@@ -24,76 +24,10 @@
 
       <div class="col-lg-4">
         <!-- Image upload -->
-        <div class="tda-form-section mb-4">
-          <p class="tda-form-section-title">Product image</p>
-
-          <!-- Drop zone -->
-          <div
-            class="tda-drop-zone"
-            [class.tda-drop-zone--has-image]="form.image_url"
-            [class.tda-drop-zone--dragging]="isDragging()"
-            (dragover)="onDragOver($event)"
-            (dragleave)="isDragging.set(false)"
-            (drop)="onDrop($event)"
-            (click)="fileInput.click()"
-          >
-            @if (uploadingImage()) {
-              <div class="tda-upload-progress">
-                <div class="tda-spinner mb-2"></div>
-                <p class="mb-0" style="font-size: 0.8125rem; color: #888">
-                  Uploading to Cloudinary...
-                </p>
-              </div>
-            } @else if (form.image_url) {
-              <img
-                [src]="form.image_url"
-                alt="Product"
-                class="tda-drop-preview"
-              />
-              <div class="tda-drop-overlay">
-                <i class="bi bi-arrow-repeat fs-4"></i>
-                <p class="mb-0 mt-1" style="font-size: 0.8125rem">
-                  Click or drag to replace
-                </p>
-              </div>
-            } @else {
-              <div class="tda-drop-empty">
-                <i class="bi bi-cloud-arrow-up fs-2 mb-2 text-muted"></i>
-                <p class="mb-1" style="font-size: 0.875rem; color: #555">
-                  Drag & drop image here
-                </p>
-                <p class="mb-0" style="font-size: 0.75rem; color: #aaa">
-                  or click to browse
-                </p>
-              </div>
-            }
-          </div>
-
-          <input
-            #fileInput
-            type="file"
-            accept="image/*"
-            class="d-none"
-            (change)="onFileSelected($event)"
-          />
-
-          @if (uploadError()) {
-            <div class="tda-field-error mt-2">{{ uploadError() }}</div>
-          }
-          @if (form.image_url) {
-            <div class="tda-image-url-row">
-              <div class="tda-image-url-preview">
-                <label class="tda-field-label">Image URL</label>
-                <a href="{{ form.image_url }}" target="_blank" class="tda-image-url-link">
-                  {{ form.image_url }}
-                </a>
-              </div>
-              <button type="button" class="btn btn-sm btn-outline-secondary tda-image-url-copy" (click)="copyImageUrl(form.image_url!)">
-                Copy
-              </button>
-            </div>
-          }
-        </div>
+        <app-image-upload
+          [imageUrl]="form.image_url"
+          (imageUrlChange)="onImageUrlChange($event)"
+        ></app-image-upload>
         <!-- Basic info -->
         <div class="tda-form-section mb-4">
           <p class="tda-form-section-title">Basic information</p>
@@ -204,8 +138,16 @@
                 <div class="col-12">
                   <label class="tda-field-label">Full Amazon URL *</label>
                   <input type="url" class="form-control tda-input"
-                    [(ngModel)]="form.amazon_url"
+                    [(ngModel)]="form.asin"
                     placeholder="https://amazon.com/dp/...?tag=thedailyarray-20" />
+                </div>
+
+
+                <div class="col-12">
+                  <label class="tda-field-label">Amazon Asin Number *</label>
+                  <input type="url" class="form-control tda-input"
+                    [(ngModel)]="form.amazon_url"
+                    />
                 </div>
               </div>
             </div>

@@ -7,6 +7,8 @@ export interface Category {
   description: string;
   meta_description: string;
   hero_tagline: string;
+  subdomain:string,
+  hero_html:string,
   display_order: number;
   is_active: boolean;
   created_at?: string;
@@ -25,6 +27,7 @@ export interface Product {
   tagline: string;
   description: string;
   amazon_url: string;
+  asin:string,
   image_url: string;
   is_featured: boolean;
   is_active: boolean;

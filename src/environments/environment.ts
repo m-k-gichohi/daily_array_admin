@@ -1,8 +1,10 @@
-import { AppConfig } from '../app/models/app-config';
-
-export const environment: AppConfig = {
-  supabaseUrl: '',
+export const environment = {
+ supabaseUrl: '',
   supabaseKey: '',
   cloudinaryCloudName:'ducrzaimz',
-  cloudinaryUploadPreset: 'my-uploads'
+  cloudinaryUploadPreset: 'my-uploads',
+  pinterestClientId: '',
+  pinterestClientSecret: '',
+  pinterestRedirectUri: '',
+
 };

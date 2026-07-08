@@ -3,4 +3,7 @@ export interface AppConfig {
   supabaseKey: string;
   cloudinaryCloudName: string;
   cloudinaryUploadPreset: string;
+  pinterestClientId: string;
+  pinterestClientSecret: string;
+  pinterestRedirectUri: string;
 }

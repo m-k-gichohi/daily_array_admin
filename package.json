@@ -5,7 +5,6 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "node set-env.js && ng build",
-
     "build:prod": "ng build --configuration production"
   },
   "dependencies": {
@@ -22,6 +21,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "chart.js": "^4.4.0",
+    "luxon": "^3.7.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.6.0"
   },
@@ -29,6 +29,7 @@
     "@angular-devkit/build-angular": "^21.2.4",
     "@angular/cli": "^21.2.4",
     "@angular/compiler-cli": "^21.2.4",
+    "@types/luxon": "^3.7.2",
     "typescript": "~5.9.2"
   }
 }
