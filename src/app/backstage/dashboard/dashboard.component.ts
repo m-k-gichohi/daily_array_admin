@@ -2,12 +2,13 @@ import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@ang
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { DashboardStats, ProductAnalytics } from '../../models';
+import { PinterestConnectionStatusComponent } from 'src/app/shared/pinterest-connection-status/pinterest-connection-status.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink,PinterestConnectionStatusComponent],
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.css"],
 })
