@@ -14,5 +14,5 @@ export const pinsBoardsResolver: ResolveFn<PinterestBoard[]> = async (route, sta
     route.queryParamMap.get('state'),
   );
 
-  return firstValueFrom(pinterestService.getAllBoards());
+  return firstValueFrom(await pinterestService.getAllBoards());
 };

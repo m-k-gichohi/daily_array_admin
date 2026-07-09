@@ -4,10 +4,7 @@ import { environment } from "../../environments/environment.development";
 import {
   Category,
   Product,
-  DashboardStats,
-  ProductAnalytics,
-  DailyStat,
-  TrafficSource,
+
 } from "../models";
 
 @Injectable({ providedIn: "root" })
@@ -110,18 +107,7 @@ export class SupabaseService {
     return data ?? null;
   }
 
-  // ── PUBLIC: PRODUCTS ──
-  // async getFeaturedProducts(): Promise<Product[]> {
-  //   const { data, error } = await this.db
-  //     .from('products')
-  //     .select('*, category:categories(*), specs:product_specs(*), features:product_features(*)')
-  //     .eq('is_featured', true)
-  //     .eq('is_active', true)
-  //     .order('display_order')
-  //     .limit(6);
-  //   if (error) throw error;
-  //   return data ?? [];
-  // }
+
 
   async getProductsByCategory(categoryId: string): Promise<Product[]> {
     const { data, error } = await this.db
