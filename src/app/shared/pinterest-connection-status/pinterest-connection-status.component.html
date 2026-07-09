@@ -1,0 +1,33 @@
+<div class="tda-api-banner mb-4">
+  @if (loading()) {
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-hourglass-split"></i>
+      <span>Checking Pinterest connection…</span>
+    </div>
+  } @else if (connected()) {
+    <div class="d-flex align-items-center flex-wrap gap-2">
+      <span class="tda-connect-badge">
+        <i class="bi bi-check-circle-fill"></i>
+        {{ connectedPrefix }} {{ username() || "@TheDailyArray" }}
+      </span>
+      <button
+        class="btn tda-connect-button"
+        (click)="disconnect()"
+        [disabled]="disconnecting()"
+      >
+        @if (disconnecting()) {
+          Disconnecting...
+        } @else {
+          {{ disconnectLabel }}
+        }
+      </button>
+    </div>
+  } @else {
+    <div class="d-flex align-items-center flex-wrap gap-2">
+      <button class="btn tda-connect-button" (click)="connect()">
+        {{ connectLabel }}
+      </button>
+      <span>{{ description }}</span>
+    </div>
+  }
+</div>

@@ -8,17 +8,17 @@ import {
 } from "@angular/core";
 import { Product, Category } from "src/app/models";
 import { AdminService } from "src/app/services/admin.service";
-import { PinterestAuthService } from "../../services/pinterest-auth.service";
 import { PinterestPin } from "./model/pins";
 import { FormsModule } from "@angular/forms";
 import { PinterestBoard } from "./model/pin-boards";
 import { ActivatedRoute } from "@angular/router";
 import { ImageUploadComponent } from "src/app/shared/image-upload/image-upload.component";
+import { PinterestConnectionStatusComponent } from "src/app/shared/pinterest-connection-status/pinterest-connection-status.component";
 import { DateTime } from "luxon";
 
 @Component({
   selector: "app-pins",
-  imports: [FormsModule, ImageUploadComponent],
+  imports: [FormsModule, ImageUploadComponent, PinterestConnectionStatusComponent],
   templateUrl: "./pins.component.html",
   styleUrl: "./pins.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +27,6 @@ export class PinsComponent implements OnInit {
   private storageKey = "tda-pin-form-draft-new";
 
   private readonly admin = inject(AdminService);
-  private readonly auth = inject(PinterestAuthService) as PinterestAuthService;
 
   readonly pins = signal<PinterestPin[]>([]);
   readonly products = signal<Product[]>([]);
@@ -36,11 +35,6 @@ export class PinsComponent implements OnInit {
   readonly filter = signal<"all" | "draft" | "scheduled" | "posted" | "failed">(
     "all",
   );
-  readonly pinterestConnected = signal(false);
-  readonly pinterestUsername = signal<string | null>(null);
-  readonly pinterestStatusLoading = signal(true);
-  readonly disconnectingPinterest = signal(false);
-
   readonly showModal = signal(false);
   readonly editingPin = signal<PinterestPin | null>(null);
   readonly deleteTarget = signal<PinterestPin | null>(null);
@@ -75,7 +69,7 @@ export class PinsComponent implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    await Promise.all([this.load(), this.updatePinterestStatus()]);
+    await this.load();
     const id = this.route.snapshot.paramMap.get("id");
     this.storageKey = this.getDraftKey(id);
 
@@ -239,29 +233,6 @@ export class PinsComponent implements OnInit {
 
   confirmDelete(pin: PinterestPin): void {
     this.deleteTarget.set(pin);
-  }
-
-  connectPinterest(): void {
-    this.auth.redirectToPinterestLogin();
-  }
-
-  async disconnectPinterest(): Promise<void> {
-    this.disconnectingPinterest.set(true);
-    try {
-      await this.auth.disconnectPinterest();
-      this.pinterestConnected.set(false);
-      this.pinterestUsername.set(null);
-    } finally {
-      this.disconnectingPinterest.set(false);
-    }
-  }
-
-  async updatePinterestStatus(): Promise<void> {
-    this.pinterestStatusLoading.set(true);
-    const status = await this.auth.getConnectionStatus();
-    this.pinterestConnected.set(status.connected);
-    this.pinterestUsername.set(status.username);
-    this.pinterestStatusLoading.set(false);
   }
 
   async deletePin(): Promise<void> {
