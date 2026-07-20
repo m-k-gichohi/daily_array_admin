@@ -18,7 +18,11 @@ import { DateTime } from "luxon";
 
 @Component({
   selector: "app-pins",
-  imports: [FormsModule, ImageUploadComponent, PinterestConnectionStatusComponent],
+  imports: [
+    FormsModule,
+    ImageUploadComponent,
+    PinterestConnectionStatusComponent,
+  ],
   templateUrl: "./pins.component.html",
   styleUrl: "./pins.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,12 +50,13 @@ export class PinsComponent implements OnInit {
 
   scheduleDate = "";
   scheduleTime = "";
+  targetTimezone = "America/New_York";
 
   form: Partial<PinterestPin> = {
     product_id: null,
     category_id: null,
     board_name: "",
-    board_id:"",
+    board_id: "",
     pin_title: "",
     pin_description: "",
     destination_url: "",
@@ -59,7 +64,8 @@ export class PinsComponent implements OnInit {
     image_url: "",
     is_amazon_redirect: true,
     is_ai_generated: false,
-    alt_text:"",
+    alt_text: "",
+    cloudinary_public_id: "",
   };
 
   readonly filteredPins = computed(() => {
@@ -128,21 +134,32 @@ export class PinsComponent implements OnInit {
 
   openModal(pin?: PinterestPin): void {
     if (pin) {
+      console.log("piin ", pin);
+      console.log("piin ", this.form);
+
       this.editingPin.set(pin);
       this.form = { ...pin };
-  
+
+      if (pin.publish_at) {
+        const dt = DateTime.fromISO(pin.publish_at, { zone: "utc" }).setZone(
+          this.targetTimezone,
+        );
+
+        this.scheduleDate = dt.toFormat("yyyy-MM-dd");
+        this.scheduleTime = dt.toFormat("HH:mm");
+      }
     } else {
       this.editingPin.set(null);
       this.form = {
         product_id: null,
         category_id: null,
         board_name: "",
-        board_id:"",
+        board_id: "",
         pin_title: "",
         pin_description: "",
         destination_url: "",
         status: "draft",
-        alt_text:"",
+        alt_text: "",
         is_amazon_redirect: true,
         is_ai_generated: false,
       };
@@ -169,7 +186,6 @@ export class PinsComponent implements OnInit {
     }
   }
 
-
   onBoardSelected(value: string): void {
     const selectedBoard = this.boards().find((board) => board.name === value);
 
@@ -186,7 +202,8 @@ export class PinsComponent implements OnInit {
       !this.form.pin_title?.trim() ||
       !this.form.pin_description?.trim() ||
       !this.form.board_name?.trim() ||
-      !this.form.destination_url?.trim()||!this.form.alt_text?.trim()
+      !this.form.destination_url?.trim() ||
+      !this.form.alt_text?.trim()
     ) {
       this.formError.set(
         "Pin title, description, board,alt text and destination URL are required.",
@@ -202,22 +219,32 @@ export class PinsComponent implements OnInit {
     this.formSaving.set(true);
     this.formError.set(null);
 
-    const publishAt = DateTime.fromISO(
+    const localTargetDateTime = DateTime.fromISO(
       `${this.scheduleDate}T${this.scheduleTime}`,
       {
-        zone: "America/New_York",
+        zone: this.targetTimezone,
       },
-    )
-      .toUTC()
-      .toISO();
+    );
+
+    const publishAt = localTargetDateTime.toUTC().toISO();
+
+    if (!publishAt) {
+      console.error("Failed to convert date to ISO string.");
+      return;
+    }
 
     const payload: Partial<PinterestPin> = {
       ...this.form,
       publish_at: publishAt || "",
     };
 
+    console.log("form", this.form);
+    console.log("payload", payload);
+
     try {
       if (this.editingPin()) {
+        delete payload.product;
+
         await this.admin.updatePin(this.editingPin()!.id, payload);
       } else {
         await this.admin.createPin(payload);
@@ -247,12 +274,21 @@ export class PinsComponent implements OnInit {
     this.form = { ...this.form, image_url: url ?? "" };
     this.saveDraft();
   }
+
+  onImagePublicIdChange(publicId: string | null): void {
+    this.form = {
+      ...this.form,
+      cloudinary_public_id: publicId ?? "",
+    };
+
+    this.saveDraft();
+  }
   onDescriptionChange(value: string): void {
     this.form.pin_description = value;
     this.saveDraft();
   }
 
-    onAltTextChange(value: string): void {
+  onAltTextChange(value: string): void {
     this.form.alt_text = value;
     this.saveDraft();
   }
@@ -274,9 +310,10 @@ export class PinsComponent implements OnInit {
         JSON.stringify({
           image_url: this.form.image_url,
           pin_description: this.form.pin_description,
-          alt_text:this.form.alt_text,
+          alt_text: this.form.alt_text,
           pin_title: this.form.pin_title,
           destination_url: this.form.destination_url,
+          cloudinary_public_id: this.form.cloudinary_public_id,
         }),
       );
     } catch {
@@ -297,7 +334,8 @@ export class PinsComponent implements OnInit {
         pin_description?: string;
         pin_title?: string;
         destination_url?: string;
-        alt_text?:string;
+        alt_text?: string;
+        cloudinary_public_id?: string;
       };
       if (draft.image_url) {
         this.form.image_url = draft.image_url;
@@ -314,8 +352,12 @@ export class PinsComponent implements OnInit {
         this.form.destination_url = draft.destination_url;
       }
 
-      if(draft.alt_text){
+      if (draft.alt_text) {
         this.form.alt_text = draft.alt_text;
+      }
+
+      if (draft.cloudinary_public_id) {
+        this.form.cloudinary_public_id = draft.cloudinary_public_id;
       }
     } catch {
       // Ignore invalid draft data.

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
+import { CloudinaryUploadResult } from '../models/cloudinary';
 
 @Injectable({ providedIn: 'root' })
 export class CloudinaryService {
@@ -7,7 +8,7 @@ export class CloudinaryService {
   private readonly uploadPreset = environment.cloudinaryUploadPreset;
   private readonly uploadUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/upload`;
 
-  async uploadImage(file: File,folder: 'pins' | 'products' = 'products'): Promise<string> {
+  async uploadImage(file: File,folder: 'pins' | 'products' = 'products'): Promise<CloudinaryUploadResult> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', this.uploadPreset);
@@ -24,10 +25,14 @@ export class CloudinaryService {
 
     const data = await response.json();
     // Return secure HTTPS URL
-    return data.secure_url as string;
+    return {
+    secureUrl: data.secure_url,
+    publicId: data.public_id,
+  };
+    // data.secure_url as string;
   }
 
-  async uploadFromDataUrl(dataUrl: string): Promise<string> {
+  async uploadFromDataUrl(dataUrl: string): Promise<CloudinaryUploadResult> {
     const formData = new FormData();
     formData.append('file', dataUrl);
     formData.append('upload_preset', this.uploadPreset);
@@ -42,6 +47,10 @@ export class CloudinaryService {
     }
 
     const data = await response.json();
-    return data.secure_url as string;
+    return  {
+    secureUrl: data.secure_url,
+    publicId: data.public_id,
+  };
+    // data.secure_url as string;
   }
 }
