@@ -137,6 +137,7 @@
   }
 </div>
 
+
 <!-- ── SCHEDULE / EDIT MODAL ── -->
 @if (showModal()) {
   <div class="tda-modal-backdrop" (click)="closeModal()">
@@ -186,6 +187,7 @@
         <app-image-upload
           [imageUrl]="form.image_url"
           (imageUrlChange)="onImageUrlChange($event)"
+          (imagePublicIdChange)="onImagePublicIdChange($event)"
           [uploadFolder]="'pins'"
         ></app-image-upload>
 
@@ -326,6 +328,8 @@
       </div>
     </div>
   </div>
+
+
 }
 
 <!-- Delete confirm -->

@@ -2,8 +2,7 @@ import { serve } from "https://deno.land/std/http/server.ts";
 
 import { getValidPinterestToken } from "../_shared/fetch-token.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-
+import { deleteCloudinaryImage } from "../_shared/cloudinary.ts";
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -66,9 +65,10 @@ serve(async (req) => {
     // Fetch Pinterest token
     const token = await getValidPinterestToken();
 
-    console.log("Pinterest access token loaded.");
+    console.log("Pinterest access token loaded. 1");
 
-    console.log("Pinterest access token loaded.", token);
+    console.log("Pinterest access token loaded. 2", token);
+    console.log("Pinterest access token loaded.", token.access_token);
 
     const results = [];
 
@@ -79,6 +79,7 @@ serve(async (req) => {
       console.log("Title:", pin.pin_title);
       console.log("Board:", pin.board_id);
       console.log("Publish At:", pin.publish_at);
+      console.log("Pin Token :", token.access_token);
 
       try {
         const requestBody = {
@@ -86,16 +87,22 @@ serve(async (req) => {
           title: pin.pin_title,
           description: pin.pin_description,
           link: pin.destination_url,
+          alt_text: pin.alt_text,
           media_source: {
             source_type: "image_url",
             url: pin.image_url,
           },
+          ...(pin.is_ai_generated && {
+            ai_disclosures: {
+              values: ["AI_MODIFIED"],
+            },
+          }),
         };
 
         console.log("Pinterest Request:");
         console.log(JSON.stringify(requestBody, null, 2));
 
-        const response = await fetch("https://api-sandbox.pinterest.com/v5/pins", {
+        const response = await fetch("https://api.pinterest.com/v5/pins", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token.access_token}`,
@@ -146,11 +153,24 @@ serve(async (req) => {
         console.log("Pinterest Publish Successful");
         console.log("Pinterest Pin ID:", pinterestResult.id);
 
+        const pinterestImage =
+          pinterestResult.media?.images?.["1200x"]?.url ??
+          pinterestResult.media?.images?.["600x"]?.url ??
+          pin.image_url;
+
+        let deleted = false;
+
+        if (pin.cloudinary_public_id) {
+          deleted = await deleteCloudinaryImage(pin.cloudinary_public_id);
+        }
+
         await supabase
           .from("pinterest_pins")
           .update({
             status: "posted",
             pinterest_pin_id: pinterestResult.id,
+            image_url: pinterestImage,
+            cloudinary_public_id: deleted ? null : pin.cloudinary_public_id,
             error_message: null,
           })
           .eq("id", pin.id);

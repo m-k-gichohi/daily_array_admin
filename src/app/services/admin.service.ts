@@ -176,13 +176,23 @@ export class AdminService {
     if (error) throw error;
   }
 
-  async updatePin(id: string, pin: Record<string, any>): Promise<void> {
-    const { error } = await this.db.db
-      .from('pinterest_pins')
-      .update(pin)
-      .eq('id', id);
-    if (error) throw error;
+async updatePin(id: string, pin: Record<string, any>): Promise<void> {
+
+    console.log('Rows actually:', id);
+
+  const { data, error } = await this.db.db
+    .from('pinterest_pins')
+    .update(pin)
+    .eq('id', id)
+    .select();  // <-- add this
+
+  if (error) throw error;
+
+  console.log('Rows actually updated:', data);
+  if (!data || data.length === 0) {
+    console.warn('Update matched 0 rows — check RLS policy or id mismatch');
   }
+}
 
   async deletePin(id: string): Promise<void> {
     const { error } = await this.db.db

@@ -21,7 +21,7 @@ export async function getValidPinterestToken() {
     throw new Error("Pinterest token not found.");
   }
 
-  console.log("Pinterest token loaded.");
+  console.log("Pinterest token loaded. 1");
 
   const expiresAt = new Date(token.expires_at);
   const now = new Date();

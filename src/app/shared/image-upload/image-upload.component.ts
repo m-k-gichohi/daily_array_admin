@@ -24,6 +24,8 @@ export class ImageUploadComponent {
   readonly uploadErrorMessage = input<string | null>(null);
 
   readonly imageUrlChange = output<string | null>();
+  readonly imagePublicIdChange = output<string | null>();
+
   readonly uploadError = output<string | null>();
 
   private readonly cloudinary = inject(CloudinaryService);
@@ -72,8 +74,11 @@ export class ImageUploadComponent {
     this.uploadingImage.set(true);
 
     try {
-      const url = await this.cloudinary.uploadImage(file, this.uploadFolder());
-      this.imageUrlChange.emit(url);
+      const imageUpload = await this.cloudinary.uploadImage(file, this.uploadFolder());
+      this.imageUrlChange.emit(imageUpload.secureUrl);
+      this.imagePublicIdChange.emit(imageUpload.publicId);
+
+      
       this.uploadError.emit(null);
     } catch {
       this.error.set('Upload failed. Check your Cloudinary credentials.');

@@ -18,4 +18,6 @@ export interface PinterestPin {
   is_ai_generated: boolean;
   publish_at: string;
   board_id:string;
+    cloudinary_public_id: string | null;
+
 }
