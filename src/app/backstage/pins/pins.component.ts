@@ -50,7 +50,8 @@ export class PinsComponent implements OnInit {
 
   scheduleDate = "";
   scheduleTime = "";
-  targetTimezone = "America/New_York";
+  targetTimezone = 'Africa/Nairobi';
+  // "America/New_York";
 
   form: Partial<PinterestPin> = {
     product_id: null,

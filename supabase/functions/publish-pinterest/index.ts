@@ -170,6 +170,8 @@ serve(async (req) => {
             status: "posted",
             pinterest_pin_id: pinterestResult.id,
             image_url: pinterestImage,
+            pinterest_published_at: pinterestResult.created_at,
+
             cloudinary_public_id: deleted ? null : pin.cloudinary_public_id,
             error_message: null,
           })
